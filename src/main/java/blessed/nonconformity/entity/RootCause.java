@@ -34,7 +34,7 @@ public class RootCause {
     private NonConformity nonconformity;
 
     public RootCause(RootCauseRequestDTO data, User user){
-        this.description = data.description();
+        this.description = data.description().toLowerCase();
         this.userCreated = user;
     }
 

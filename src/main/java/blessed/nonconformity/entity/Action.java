@@ -80,8 +80,8 @@ public class Action {
 
 
     public Action(ActionRequestDTO data){
-        this.title = data.title();
-        this.description = data.description();
+        this.title = data.title().toLowerCase();
+        this.description = data.description().toLowerCase();
         this.actionType = data.actionType();
         this.status = ActionStatus.PENDING;
         this.dueDate = data.dueDate();

@@ -46,7 +46,7 @@ public class EffectivenessAnalysis {
 
     public EffectivenessAnalysis(EffectivenessAnalysisRequestDTO data, NonConformity nc, User user){
         this.effective = data.effective();
-        this.effectivenessDescription = data.effectivenessDescription();
+        this.effectivenessDescription = data.effectivenessDescription().toLowerCase();
         this.nonConformity = nc;
         this.analyzedByUser = user;
         this.analyzedAt = LocalDateTime.now();

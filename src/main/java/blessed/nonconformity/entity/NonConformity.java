@@ -129,7 +129,7 @@ public class NonConformity {
             Company company
             ){
         this.title = data.title().toLowerCase();
-        this.description = data.description();
+        this.description = data.description().toLowerCase();
         this.hasAccidentRisk = data.hasAccidentRisk();
         this.urlEvidence = urlEvidence;
         this.priorityLevel = data.priorityLevel();
