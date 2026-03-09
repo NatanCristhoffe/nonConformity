@@ -13,7 +13,7 @@ import java.util.UUID;
 public record ActionRequestDTO(
 
         @NotBlank(message = "O título da ação é obrigatório.")
-        @Size(max = 120, message = "O título da ação deve ter no máximo 120 caracteres.")
+        @Size(min = 10, max = 120, message = "O título da ação deve ter no máximo 120 caracteres.")
         String title,
 
         @NotBlank(message = "A descrição da ação é obrigatória.")
