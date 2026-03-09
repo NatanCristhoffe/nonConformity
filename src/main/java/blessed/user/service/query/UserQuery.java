@@ -59,6 +59,13 @@ public class UserQuery {
          return repository.existsByEmail(email);
     }
 
+    public boolean validLastAdmin(UUID companyId, UserRole role, UUID id){
+      return  repository.existsByCompanyIdAndRoleAndEnabledTrueAndIdNot(
+              companyId,
+              role,
+              id
+      );
+    };
     public Boolean existsByPhone(String phone){
         return repository.existsByPhone(phone);
     }

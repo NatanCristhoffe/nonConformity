@@ -72,8 +72,9 @@ public class UserService{
     @Transactional
     public void disable(UUID userId, User currentUser){
         User user = userQuery.byId(currentUser.getCompany().getId(), userId);
-        System.out.println("User -> " + user);
+
         validateNotSelOfOperation(user, currentUser);
+        validateLastAdmin(user,user.getCompany().getId());
 
         user.disable();
     }
@@ -172,6 +173,23 @@ public class UserService{
                     "Operação não permitida: não é possível habilitar ou desabilitar o próprio usuário."
             );
         }
+    }
+
+    private void validateLastAdmin(User user, UUID companyId){
+        if (user.getRole() == UserRole.ADMIN){
+            boolean existAnotherAdmin = userQuery.validLastAdmin(
+                    companyId,
+                    user.getRole(),
+                    user.getId()
+            );
+
+            if (!existAnotherAdmin){
+                throw new BusinessException(
+                        "A empresa deve possuir pelo menos um administrador ativo."
+                );
+            }
+        }
+
     }
 
     private void validateUserOwnership(User user, User currentUser){

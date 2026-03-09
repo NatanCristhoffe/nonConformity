@@ -81,8 +81,6 @@ public class SectorService {
           throw  new BusinessException("A empresa deve possuir pelo menos um setor ativo");
         }
 
-
-
         sector.disable();
     }
 }

@@ -14,6 +14,12 @@ import java.util.UUID;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
 
+    Long countByCompanyIdAndEnabledTrue(UUID companyId);
+    boolean existsByCompanyIdAndRoleAndEnabledTrueAndIdNot(
+            UUID companyId,
+            UserRole role,
+            UUID id
+    );
     Optional<User> findByEmail(String email);
     List<User> findAllByCompanyId(UUID companyId);
     boolean existsByEmail(String email);
