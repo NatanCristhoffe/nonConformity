@@ -12,6 +12,8 @@ import blessed.nonconformity.enums.NonConformityStatus;
 import blessed.nonconformity.dto.NonconformityRequestDTO;
 import blessed.nonconformity.dto.NonconformityResponseDTO;
 import blessed.nonconformity.service.query.NonConformityQuery;
+import blessed.notification.entity.Notification;
+import blessed.notification.service.NotificationService;
 import blessed.sector.service.query.SectorQuery;
 import blessed.sector.entity.Sector;
 import blessed.user.entity.User;
@@ -41,6 +43,7 @@ public class NonconformityService {
     private final SectorQuery sectorQuery;
     private final S3FileStorageService s3Service;
     private final CompanyQuery companyQuery;
+    private final NotificationService notificationService;
 
     public NonconformityService(
             QualityToolService qualityToolService,
@@ -48,7 +51,8 @@ public class NonconformityService {
             UserService userService,
             SectorQuery sectorQuery,
             S3FileStorageService s3Service,
-            CompanyQuery companyQuery
+            CompanyQuery companyQuery,
+            NotificationService notificationService
     ) {
         this.qualityToolService = qualityToolService;
         this.nonConformityQuery = nonConformityQuery;
@@ -56,6 +60,7 @@ public class NonconformityService {
         this.sectorQuery = sectorQuery;
         this.s3Service = s3Service;
         this.companyQuery = companyQuery;
+        this.notificationService = notificationService;
     }
 
     @PreAuthorize("@ncAuth.canAccessNc(#nonconformityId, authentication)")
@@ -109,8 +114,12 @@ public class NonconformityService {
         Company company = companyQuery.byId(companyId);
 
         User createBy = userService.getById(companyId, user.getId());
+
         User dispositionOwner = userService.getById(companyId, data.dispositionOwnerId());
+        System.out.println(data.dispositionOwnerId() + " - " + companyId);
+
         User effectivenessAnalyst = userService.getById(companyId, data.effectivenessAnalystId());
+        System.out.println(data.effectivenessAnalystId() + " - " + companyId);
 
         if (!effectivenessAnalyst.isAdmin()){
             throw new BusinessException("Usuário não possui permissão para realizar a análise de eficácia.");
@@ -128,6 +137,12 @@ public class NonconformityService {
                 company
         );
         nonConformityQuery.save(nc);
+
+        notificationService.notifyByUser(
+                dispositionOwner.getId(),
+                companyId,
+                "Você foi definido como responsavel de eficaci no registro " + nc.getTitle() + "!"
+        );
         return new NonconformityResponseDTO(nc);
     }
 
