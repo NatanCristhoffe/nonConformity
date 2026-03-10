@@ -35,6 +35,7 @@ public class Notification {
     private String message;
 
     private boolean isRead;
+    private LocalDateTime readAt;
 
     private LocalDateTime createdAt;
 
@@ -49,6 +50,13 @@ public class Notification {
         this.isRead = false;
         this.type = type;
         this.createdAt = LocalDateTime.now();
+    }
+
+    public void markAsRead(){
+        if(!this.isRead){
+            this.setRead(true);
+            this.setReadAt(LocalDateTime.now());
+        }
     }
 
 }
