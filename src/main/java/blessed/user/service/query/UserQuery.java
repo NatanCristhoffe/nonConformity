@@ -74,7 +74,7 @@ public class UserQuery {
         return repository.findByEmail(email);
     }
 
-    private Long countByCompany(UUID companyId){
+    public Long countByCompany(UUID companyId){
         return repository.countActiveUsersByCompany(companyId);
     }
 }
