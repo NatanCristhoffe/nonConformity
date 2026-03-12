@@ -36,7 +36,7 @@ public class CreateCompanyWithAdminService {
             CompanyWithAdminRequestDTO data
     ){
             Company company = companyService.create(data.company());
-            Sector sector = sectorService.create(data.sector(), company.getId());
+            Sector sector = sectorService.create(data.sector());
             userService.register(data.admin(), company, sector);
     }
 }
