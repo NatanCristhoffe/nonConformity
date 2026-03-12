@@ -20,10 +20,8 @@ public class DashboardController {
     }
 
     @GetMapping("/indicators")
-    public ResponseEntity<DashboardIndicatorsResponse> dashboard(
-            @AuthenticationPrincipal User user
-            ){
-        return ResponseEntity.ok(service.getIndicators(user.getCompany().getId()));
+    public ResponseEntity<DashboardIndicatorsResponse> dashboard(){
+        return ResponseEntity.ok(service.getIndicators());
     }
 
 
