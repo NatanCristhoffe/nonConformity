@@ -65,7 +65,7 @@ public interface NonconformityRepository extends JpaRepository<NonConformity, Lo
     );
 
     boolean existsByIdAndDispositionOwnerIdAndCompanyId(Long id, UUID dispositionOwnerId, UUID companyId);
-    boolean existsByIdAndEffectivenessAnalystId(Long id, UUID effectivenessAnalystId);
+    boolean existsByIdAndEffectivenessAnalystIdAndCompanyId(Long id, UUID effectivenessAnalystId, UUID companyId);
 
 
     @Query("""

@@ -79,8 +79,8 @@ public class NonConformityQuery {
         return nonconformityRepository.existsByIdAndDispositionOwnerIdAndCompanyId(ncId, idUSer, companyId);
     }
 
-    public boolean existsByIdAndEffectivenessAnalystId(Long ncId, UUID idUSer){
-        return nonconformityRepository.existsByIdAndEffectivenessAnalystId(ncId, idUSer);
+    public boolean existsByIdAndEffectivenessAnalystIdAndCompanyId(Long ncId, UUID idUSer, UUID companyId){
+        return nonconformityRepository.existsByIdAndEffectivenessAnalystIdAndCompanyId(ncId, idUSer, companyId);
     }
 
     public boolean hasLink(Long ncId, UUID userId){

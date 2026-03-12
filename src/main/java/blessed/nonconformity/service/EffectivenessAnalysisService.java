@@ -1,5 +1,6 @@
 package blessed.nonconformity.service;
 
+import blessed.auth.utils.CurrentUser;
 import blessed.exception.BusinessException;
 import blessed.exception.ResourceNotFoundException;
 import blessed.nonconformity.dto.EffectivenessAnalysisRequestDTO;
@@ -30,28 +31,32 @@ public class EffectivenessAnalysisService {
     private final NonConformityQuery nonConformityQuery;
     private final UserQuery userQuery;
     private final NotificationService notificationService;
+    private final CurrentUser currentUser;
 
     public EffectivenessAnalysisService(
             EffectivenessAnalysisQuery effectivenessAnalysisQuery,
             NonConformityQuery nonConformityQuery,
             UserQuery userQuery,
-            NotificationService notificationService
+            NotificationService notificationService,
+            CurrentUser currentUser
     ) {
         this.effectivenessAnalysisQuery = effectivenessAnalysisQuery;
         this.nonConformityQuery = nonConformityQuery;
         this.userQuery = userQuery;
         this.notificationService = notificationService;
+        this.currentUser = currentUser;
     }
 
-    @PreAuthorize("@ncAuth.isEffectivenessAnalystOrAdmin(#nonconformityId, authentication)")
+    @PreAuthorize("@ncAuth.isEffectivenessAnalystOrAdmin(#nonconformityId)")
     @Transactional
-    public void addEffectivenessAnalysis(Long nonconformityId,EffectivenessAnalysisRequestDTO data, User userRequest) {
-        UUID companyId = userRequest.getCompany().getId();
+    public void addEffectivenessAnalysis(Long nonconformityId,EffectivenessAnalysisRequestDTO data) {
+        UUID companyId = currentUser.getCompanyId();
         NonConformity nc = nonConformityQuery.byId(nonconformityId, companyId);
-        User user = userQuery.byId(userRequest.getCompany().getId(), userRequest.getId());
+
+        User user = userQuery.byId(companyId, currentUser.getId());
 
         EffectivenessAnalysis effectiveness = new EffectivenessAnalysis(data, nc, user);
-        nc.addEffectivenessAnalysis(effectiveness, userRequest);
+        nc.addEffectivenessAnalysis(effectiveness, user);
 
         effectivenessAnalysisQuery.save(effectiveness);
 
@@ -64,7 +69,7 @@ public class EffectivenessAnalysisService {
         if (effectiveness.getEffective()){
             notificationService.notifyIfNotSameUser(
                     notifyUsers,
-                    userRequest.getId(),
+                    currentUser.getId(),
                     companyId,
                     NotificationType.EFFECTIVENESS_APPROVED,
                     nc.getTitle()
@@ -72,7 +77,7 @@ public class EffectivenessAnalysisService {
         } else {
             notificationService.notifyIfNotSameUser(
                     notifyUsers,
-                    userRequest.getId(),
+                    currentUser.getId(),
                     companyId,
                     NotificationType.EFFECTIVENESS_REJECTED,
                     nc.getTitle()

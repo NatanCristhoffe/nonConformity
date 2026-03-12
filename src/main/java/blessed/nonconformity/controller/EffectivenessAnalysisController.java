@@ -22,15 +22,12 @@ public class EffectivenessAnalysisController {
         this.service = service;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add/{ncId}")
     public ResponseEntity<Map<String, String>> addEffectivenessAnalysis(
             @RequestBody @Valid EffectivenessAnalysisRequestDTO data,
-            @PathVariable Long ncId,
-            Authentication authentication
+            @PathVariable Long ncId
             ){
-        User user = (User) authentication.getPrincipal();
-        service.addEffectivenessAnalysis(ncId, data, user);
+        service.addEffectivenessAnalysis(ncId, data);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Análise de eficácia criada com sucesso"));
     }
