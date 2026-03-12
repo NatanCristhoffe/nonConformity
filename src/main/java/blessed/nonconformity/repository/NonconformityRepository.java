@@ -35,13 +35,21 @@ public interface NonconformityRepository extends JpaRepository<NonConformity, Lo
     );
 
     @Query("""
-    SELECT nc FROM NonConformity nc
-    WHERE LOWER(nc.title) LIKE LOWER(CONCAT('%', :title, '%'))
-    AND nc.company.id = :companyId
+        SELECT DISTINCT nc FROM NonConformity nc
+        LEFT JOIN nc.actions a
+        WHERE LOWER(nc.title) LIKE LOWER(CONCAT('%', :title, '%'))
+        AND nc.company.id = :companyId
+        AND (
+               nc.createdBy.id = :userId
+            OR nc.dispositionOwner.id = :userId
+            OR nc.effectivenessAnalyst.id = :userId
+            OR a.responsibleUser.id = :userId
+        )
     """)
     List<NonConformity> findTopByTitleAndCompany(
             @Param("title") String title,
             @Param("companyId") UUID companyId,
+            @Param("userId") UUID userId,
             Pageable pageable
     );
 

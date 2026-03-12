@@ -64,8 +64,8 @@ public class NonConformityRepositoryFindByTitleByCompanyTest {
         List<NonConformity> ncs = nonconformityRepository.findTopByTitleAndCompany(
                 nonConformity.getTitle(),
                 user.getCompany().getId(),
+                user.getId(),
                 pageable
-
         );
 
         assertFalse(ncs.isEmpty());
@@ -75,10 +75,21 @@ public class NonConformityRepositoryFindByTitleByCompanyTest {
 
     @Test
     void shouldReturnEmptyWhenNonConformityNotFoundByTitle(){
+        Company company = companyRepository.save(
+                TestDataFactory.createCompany()
+        );
+        Sector sector = sectorRepository.save(
+                TestDataFactory.createSector(company)
+        );
+        User user = userRepository.save(
+                TestDataFactory.createUser(company, sector)
+        );
+
         Pageable pageable = PageRequest.of(0, 10);
         List<NonConformity> ncs = nonconformityRepository.findTopByTitleAndCompany(
                 "title invalid",
                 UUID.randomUUID(),
+                user.getId(),
                 pageable
 
         );

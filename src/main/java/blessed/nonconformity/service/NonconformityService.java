@@ -22,6 +22,7 @@ import blessed.user.service.UserService;
 import blessed.user.service.query.UserQuery;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -67,7 +68,7 @@ public class NonconformityService {
 
     @PreAuthorize("@ncAuth.canAccessNc(#nonconformityId, authentication)")
     public NonconformityResponseDTO getNcById(
-            Long nonconformityId, boolean includeAll, UUID companyId){
+            Long nonconformityId, boolean includeAll, UUID companyId, User authentication){
 
         NonConformity nonConformity = includeAll
                 ? nonConformityQuery.byIdWithAll(nonconformityId, companyId)
@@ -216,8 +217,14 @@ public class NonconformityService {
     }
 
 
-    public List<NonconformityResponseDTO> findByTitleStartingWithIgnoreCase(String title, UUID companyId) {
-        return  nonConformityQuery.findByTitle(title, companyId)
+    public List<NonconformityResponseDTO> findByTitleStartingWithIgnoreCase(
+            String title,
+            UUID companyId,
+            User authentication
+    ) {
+
+        return nonConformityQuery
+                .findByTitle(title, companyId, authentication)
                 .stream()
                 .map(NonconformityResponseDTO::new)
                 .toList();

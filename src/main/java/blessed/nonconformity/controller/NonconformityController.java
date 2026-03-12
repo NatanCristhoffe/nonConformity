@@ -71,14 +71,18 @@ public class NonconformityController {
             @RequestParam(defaultValue = "false") boolean includeAll,
             @AuthenticationPrincipal User user
         ){
-        return ResponseEntity.ok(service.getNcById(id, includeAll, user.getCompany().getId()));
+        return ResponseEntity.ok(service.getNcById(id, includeAll, user.getCompany().getId(), user));
     }
 
     @GetMapping(params = "title")
     public ResponseEntity<List<NonconformityResponseDTO>> getByTitle(
             @RequestParam String title, @AuthenticationPrincipal User user
     ){
-        List<NonconformityResponseDTO> nonConformities = service.findByTitleStartingWithIgnoreCase(title, user.getCompany().getId());
+        List<NonconformityResponseDTO> nonConformities = service.findByTitleStartingWithIgnoreCase(
+                title,
+                user.getCompany().getId(),
+                user
+        );
 
         return ResponseEntity.ok(nonConformities);
     }

@@ -7,6 +7,7 @@ import blessed.nonconformity.dto.NonconformityResponseDTO;
 import blessed.nonconformity.entity.NonConformity;
 import blessed.nonconformity.enums.NonConformityStatus;
 import blessed.nonconformity.repository.NonconformityRepository;
+import blessed.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -47,9 +48,9 @@ public class NonConformityQuery {
         return nonconformityRepository.findByUser(user, companyId, pageable);
     }
 
-    public List<NonConformity> findByTitle(String title, UUID companyId){
+    public List<NonConformity> findByTitle(String title, UUID companyId, User user){
         Pageable topFive = PageRequest.of(0, 5);
-        return  nonconformityRepository.findTopByTitleAndCompany(title, companyId, topFive);
+        return  nonconformityRepository.findTopByTitleAndCompany(title, companyId, user.getId(), topFive);
     }
 
     public Page<NonConformity> findAllByStatus(
