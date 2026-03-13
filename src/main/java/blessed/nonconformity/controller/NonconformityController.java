@@ -52,13 +52,12 @@ public class NonconformityController {
 
     @GetMapping
     public ResponseEntity<Page<NonconformityResponseDTO>> getAllOrGetByUser(
-            @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "false") boolean getAll,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
             ){
         Pageable pageable = PageRequest.of(page, size);
-        return ResponseEntity.ok(service.getAllOrGetByUser(user, getAll, pageable));
+        return ResponseEntity.ok(service.getAllOrGetByUser(getAll, pageable));
     }
 
     @GetMapping("/{id}")

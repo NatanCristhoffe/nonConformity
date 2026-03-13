@@ -95,20 +95,19 @@ public class NonconformityService {
     }
 
 
-    public Page<NonconformityResponseDTO> getAllOrGetByUser(
-            User userRequest,
-            boolean getAll,
-            Pageable pageable
-    ){
+    public Page<NonconformityResponseDTO> getAllOrGetByUser(boolean getAll, Pageable pageable){
+        UUID companyId = currentUser.getCompanyId();
 
-        User user = userService.getById(userRequest.getId());
-
-        if(getAll && user.isAdmin()){
-            return nonConformityQuery.getAll(user.getCompany().getId(),pageable)
+        if(getAll && currentUser.isAdmin()){
+            return nonConformityQuery.getAll(companyId, pageable)
                     .map(NonconformityResponseDTO::new);
         }
 
-        return nonConformityQuery.getAllNonconformitiesByUser(user.getId(), user.getCompany().getId(),pageable).map(NonconformityResponseDTO::new);
+        return nonConformityQuery
+                .getAllNonconformitiesByUser(
+                currentUser.getId(), companyId, pageable
+                )
+                .map(NonconformityResponseDTO::new);
     }
 
     @Transactional
