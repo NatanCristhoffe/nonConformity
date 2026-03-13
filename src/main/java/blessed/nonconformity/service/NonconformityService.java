@@ -234,24 +234,22 @@ public class NonconformityService {
                 .toList();
     }
 
-    public Page<NonconformityResponseDTO> getMyNonconformitiesByStatus(
+    public Page<NonconformityResponseDTO> getMyNonConformityByStatus(
             NonConformityStatus status,
-            User user,
-            UUID companyId,
             boolean includeAll,
             Pageable pageable
     ) {
-        boolean isAdmin = user.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        UUID companyId = currentUser.getCompanyId();
+        boolean isAdmin = currentUser.isAdmin();
 
         if (includeAll && isAdmin) {
             return nonConformityQuery
-                    .findAllByStatus(status, companyId,pageable)
+                    .findAllByStatus(status, companyId, pageable)
                     .map(NonconformityResponseDTO::new);
         }
 
         return nonConformityQuery
-                .findMyByStatus(status, user.getId(), companyId,pageable)
+                .findMyByStatus(status, currentUser.getId(), companyId, pageable)
                 .map(NonconformityResponseDTO::new);
     }
 

@@ -81,18 +81,12 @@ public class NonconformityController {
     public ResponseEntity<PageResponseDTO<NonconformityResponseDTO>> getByStatus(
             @RequestParam NonConformityStatus status,
             @RequestParam(defaultValue = "false") boolean includeAll,
-            @AuthenticationPrincipal User user,
             @PageableDefault(size = 20) Pageable pageable
 
     ) {
-        if (user.getCompany() == null || user.getCompany().getId() == null) {
-            throw new RuntimeException("Usuário sem empresa vinculada");
-        }
         Page<NonconformityResponseDTO> page =
-                service.getMyNonconformitiesByStatus(
+                service.getMyNonConformityByStatus(
                         status,
-                        user,
-                        user.getCompany().getId(),
                         includeAll,
                         pageable
                 );
