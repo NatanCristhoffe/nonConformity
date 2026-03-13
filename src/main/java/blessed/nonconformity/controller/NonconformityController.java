@@ -42,13 +42,9 @@ public class NonconformityController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<NonconformityResponseDTO> create(
             @RequestPart("data") @Valid NonconformityRequestDTO data,
-            @RequestPart(value = "file", required = false) MultipartFile file,
-            @AuthenticationPrincipal User user
+            @RequestPart(value = "file", required = false) MultipartFile file
     ) {
-        NonconformityResponseDTO nonconformity = service.create(
-                data, user, user.getCompany().getId(),
-                file
-        );
+        NonconformityResponseDTO nonconformity = service.create(data,file);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(nonconformity);

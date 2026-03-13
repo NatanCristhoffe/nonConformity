@@ -1,5 +1,6 @@
 package blessed.nonconformity.service;
 
+import blessed.auth.utils.CurrentUser;
 import blessed.company.entity.Company;
 import blessed.company.service.query.CompanyQuery;
 import blessed.exception.BusinessException;
@@ -47,6 +48,7 @@ public class NonconformityService {
     private final S3FileStorageService s3Service;
     private final CompanyQuery companyQuery;
     private final NotificationService notificationService;
+    private final CurrentUser currentUser;
 
     public NonconformityService(
             QualityToolService qualityToolService,
@@ -55,7 +57,8 @@ public class NonconformityService {
             SectorQuery sectorQuery,
             S3FileStorageService s3Service,
             CompanyQuery companyQuery,
-            NotificationService notificationService
+            NotificationService notificationService,
+            CurrentUser currentUser
     ) {
         this.qualityToolService = qualityToolService;
         this.nonConformityQuery = nonConformityQuery;
@@ -64,6 +67,7 @@ public class NonconformityService {
         this.s3Service = s3Service;
         this.companyQuery = companyQuery;
         this.notificationService = notificationService;
+        this.currentUser = currentUser;
     }
 
     @PreAuthorize("@ncAuth.canAccessNc(#nonconformityId, authentication)")
@@ -108,15 +112,14 @@ public class NonconformityService {
     }
 
     @Transactional
-    public NonconformityResponseDTO create(
-            NonconformityRequestDTO data, User user,
-            UUID companyId,MultipartFile file
-    ){
+    public NonconformityResponseDTO create(NonconformityRequestDTO data, MultipartFile file){
+        UUID companyId = currentUser.getCompanyId();
+
         Sector source = sectorQuery.byId(data.sourceDepartmentId(), companyId);
         Sector responsibleDepartment = sectorQuery.byId(data.responsibleDepartmentId(), companyId);
         Company company = companyQuery.byId(companyId);
 
-        User createBy = userService.getById(user.getId());
+        User createBy = userService.getById(currentUser.getId());
 
         User dispositionOwner = userService.getById(data.dispositionOwnerId());
         User effectivenessAnalyst = userService.getById(data.effectivenessAnalystId());
