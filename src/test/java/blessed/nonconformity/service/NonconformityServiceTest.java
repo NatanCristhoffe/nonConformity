@@ -82,7 +82,7 @@ class NonconformityServiceTest {
         );
 
         NonconformityResponseDTO response =
-                nonconformityService.create(request, user, company.getId(), null);
+                nonconformityService.create(request,null);
 
         assertNotNull(response);
         assertEquals("test create", response.title());
@@ -155,7 +155,7 @@ class NonconformityServiceTest {
 
         when(nonConformityQuery.byId(nc.getId(), company.getId())).thenReturn(nc);
 
-        nonconformityService.sendToCorrection(nc.getId(), user);
+        nonconformityService.sendToCorrection(nc.getId());
 
         verify(nonConformityQuery, times(1)).byId(nc.getId(), company.getId());
         assertEquals(NonConformityStatus.RETURNED_FOR_CORRECTION, nc.getStatus());

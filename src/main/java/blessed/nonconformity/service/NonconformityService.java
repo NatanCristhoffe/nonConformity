@@ -203,9 +203,12 @@ public class NonconformityService {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
-    public  void sendToCorrection(Long id, User user){
-        NonConformity nonConformity = nonConformityQuery.byId(id, user.getCompany().getId());
+    public  void sendToCorrection(Long id){
+        UUID companyId = currentUser.getCompanyId();
+        User user = currentUser.get();
+        NonConformity nonConformity = nonConformityQuery.byId(id, companyId);
         nonConformity.correction(user);
 
         Set<UUID> usersId = new HashSet<UUID>();
@@ -213,11 +216,10 @@ public class NonconformityService {
         usersId.add(nonConformity.getDispositionOwner().getId());
         usersId.add(nonConformity.getEffectivenessAnalyst().getId());
 
-
         notificationService.notifyIfNotSameUser(
                 usersId,
                 user.getId(),
-                user.getCompany().getId(),
+                companyId,
                 NotificationType.NON_CONFORMITY_RETURNED_FOR_CORRECTION,
                 nonConformity.getTitle()
         );

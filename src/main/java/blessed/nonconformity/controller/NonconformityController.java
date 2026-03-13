@@ -120,18 +120,12 @@ public class NonconformityController {
     @PutMapping("/{id}/approve")
     public ResponseEntity<Void> approve(@PathVariable Long id){
         service.approve(id);
-
         return ResponseEntity.noContent().build();
     }
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}/correction")
-    public ResponseEntity<Void> correction(
-            @PathVariable Long id,
-            Authentication authentication)
-    {
-        User user = (User) authentication.getPrincipal();
-        service.sendToCorrection(id, user);
 
+    @PutMapping("/{id}/correction")
+    public ResponseEntity<Void> correction(@PathVariable Long id){
+        service.sendToCorrection(id);
         return ResponseEntity.noContent().build();
     }
 
