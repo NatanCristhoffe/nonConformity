@@ -45,14 +45,12 @@ public class NonConformityAuthorization {
         );
     }
 
-    public boolean canAccessNc(Long ncId, Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
-
-        if (user.isAdmin()) {
+    public boolean canAccessNc(Long ncId) {
+        if (currentUser.isAdmin()) {
             return true;
         }
 
-        return nonConformityQuery.hasLink(ncId, user.getId());
+        return nonConformityQuery.hasLink(ncId, currentUser.getId());
     }
 }
 

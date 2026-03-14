@@ -25,10 +25,9 @@ public class RootCauseController {
     @PostMapping("/{ncId}")
     public ResponseEntity<RootCauseResponseDTO> addRootCauseNc(
             @PathVariable Long ncId,
-            @RequestBody @Valid RootCauseRequestDTO data,
-            @AuthenticationPrincipal User user
-            ){
-        RootCause rootCause = service.create(ncId, data, user);
+            @RequestBody @Valid RootCauseRequestDTO data
+    ){
+        RootCause rootCause = service.create(ncId, data);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

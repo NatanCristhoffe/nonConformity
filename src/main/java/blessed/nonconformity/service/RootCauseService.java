@@ -1,5 +1,6 @@
 package blessed.nonconformity.service;
 
+import blessed.auth.utils.CurrentUser;
 import blessed.exception.BusinessException;
 import blessed.exception.ResourceNotFoundException;
 import blessed.nonconformity.dto.RootCauseRequestDTO;
@@ -29,30 +30,35 @@ public class RootCauseService {
     private final UserQuery userQuery;
     private final RootCauseQuery rootCauseQuery;
     private final NotificationService notificationService;
+    private final  CurrentUser currentUser;
+
 
     public RootCauseService(
         UserQuery userQuery,
         NonConformityQuery nonConformityQuery,
         RootCauseQuery rootCauseQuery,
-        NotificationService notificationService
+        NotificationService notificationService,
+        CurrentUser currentUser
     ){
         this.userQuery = userQuery;
         this.nonConformityQuery = nonConformityQuery;
         this.rootCauseQuery = rootCauseQuery;
         this.notificationService = notificationService;
+        this.currentUser = currentUser;
     }
 
-    @PreAuthorize("@ncAuth.isDispositionOwnerOrAdmin(#nonconformityId, authentication)")
+    @PreAuthorize("@ncAuth.isDispositionOwnerOrAdmin(#nonconformityId)")
     @Transactional
-    public RootCause create(Long nonconformityId, RootCauseRequestDTO data, User user){
+    public RootCause create(Long nonconformityId, RootCauseRequestDTO data){
 
-        NonConformity nc = nonConformityQuery.byId(nonconformityId, user.getCompany().getId());
-        User userRequest = userQuery.byId(user.getCompany().getId(),user.getId());
+        UUID companyId = currentUser.getCompanyId();
+        User user = userQuery.byId(companyId, currentUser.getId());
 
-        RootCause rootCause = new RootCause(data, userRequest);
-        nc.addRootCause(rootCause, user);
-
+        RootCause rootCause = new RootCause(data, user);
         rootCauseQuery.save(rootCause);
+
+        NonConformity nc = nonConformityQuery.byId(nonconformityId, companyId);
+        nc.addRootCause(rootCause, user);
 
         Set<UUID> usersToNotify = new HashSet<>();
 
@@ -61,8 +67,8 @@ public class RootCauseService {
 
         notificationService.notifyIfNotSameUser(
                 usersToNotify,
-                user.getId(),
-                user.getCompany().getId(),
+                currentUser.getId(),
+                companyId,
                 NotificationType.ROOT_CAUSE_COMPLETED,
                 nc.getTitle()
         );

@@ -70,9 +70,9 @@ public class NonconformityService {
         this.currentUser = currentUser;
     }
 
-    @PreAuthorize("@ncAuth.canAccessNc(#nonconformityId, authentication)")
-    public NonconformityResponseDTO getNcById(
-            Long nonconformityId, boolean includeAll, UUID companyId, User authentication){
+    @PreAuthorize("@ncAuth.canAccessNc(#nonconformityId)")
+    public NonconformityResponseDTO getNcById(Long nonconformityId, boolean includeAll){
+        UUID companyId = currentUser.getCompanyId();
 
         NonConformity nonConformity = includeAll
                 ? nonConformityQuery.byIdWithAll(nonconformityId, companyId)
@@ -104,9 +104,7 @@ public class NonconformityService {
         }
 
         return nonConformityQuery
-                .getAllNonconformitiesByUser(
-                currentUser.getId(), companyId, pageable
-                )
+                .getAllNonconformitiesByUser(currentUser.getId(), companyId, pageable)
                 .map(NonconformityResponseDTO::new);
     }
 
