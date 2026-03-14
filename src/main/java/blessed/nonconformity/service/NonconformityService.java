@@ -78,6 +78,8 @@ public class NonconformityService {
                 ? nonConformityQuery.byIdWithAll(nonconformityId, companyId)
                 : nonConformityQuery.byId(nonconformityId, companyId);
 
+        System.out.println(nonConformity.getCreatedAt());
+
         String presignedUrl = s3Service.generatePresignedUrl(nonConformity.getUrlEvidence());
 
         Set<ActionResponseDTO> actionsDto = null;

@@ -18,6 +18,7 @@ import blessed.utils.DataTimeUtils;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -128,6 +129,7 @@ public class NonConformity {
             User createBy, User dispositionOwner, User effectivenessAnalyst, String urlEvidence,
             Company company
             ){
+
         this.title = data.title().toLowerCase();
         this.description = data.description().toLowerCase();
         this.hasAccidentRisk = data.hasAccidentRisk();

@@ -52,9 +52,8 @@ public record NonconformityResponseDTO(
     public NonconformityResponseDTO(NonConformity entity) {
         this(entity, false, null, null);
     }
-
     public NonconformityResponseDTO(
-            NonConformity entity, boolean includeAll,String presignedUrlEvidence,
+            NonConformity entity, boolean includeAll, String presignedUrlEvidence,
             Set<ActionResponseDTO> signedActions
     ) {
         this(
@@ -68,9 +67,9 @@ public record NonconformityResponseDTO(
                 entity.getPriorityLevel(),
                 entity.getStatus(),
 
+                entity.getCreatedAt(),
                 entity.getDispositionDate(),
                 entity.getDispositionClosedAt(),
-                entity.getCreatedAt(),
 
                 entity.getLinkedRnc() != null
                         ? new LinkedRncDTO(entity.getLinkedRnc())
