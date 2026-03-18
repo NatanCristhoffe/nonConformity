@@ -54,6 +54,12 @@ public class SectorService {
         return sectorQuery.save(sector,currentUser.getCompanyId());
     }
 
+    @Transactional
+    public Sector createForNewCompany(SectorRequestDTO data, Company company) {
+        Sector sector = new Sector(data, company);
+        return sectorQuery.save(sector, company.getId());
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public SectorResponseDTO update(Long id, SectorRequestDTO data){

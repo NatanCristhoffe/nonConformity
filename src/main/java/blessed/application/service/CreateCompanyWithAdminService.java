@@ -37,7 +37,7 @@ public class CreateCompanyWithAdminService {
     ){
         try{
             Company company = companyService.create(data.company());
-            Sector sector = sectorService.create(data.sector());
+            Sector sector = sectorService.createForNewCompany(data.sector(), company);
             userService.register(data.admin(), company, sector);
         } catch (Exception e) {
             e.printStackTrace();
