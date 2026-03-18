@@ -44,7 +44,7 @@ public class SectorService {
                 currentUser.getCompanyId());
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public Sector create(SectorRequestDTO data){
         if (sectorQuery.countByActive(true, currentUser.getCompanyId()) >= 20){
