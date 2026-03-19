@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface NotificationRepository extends JpaRepository<Notification, UUID> {
-    List<Notification> findByUserIdAndReadFalse(Long userId);
+    List<Notification> findByUserIdAndIsReadFalse(UUID userId);
     Optional<Notification> findById(UUID id);
 
     @Query("""
