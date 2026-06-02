@@ -69,6 +69,21 @@ public class DashboardQuery {
                 .orElse(0.0);
     }
 
+    public Long countWithAccidentRisk(UUID companyId, LocalDateTime startDate, LocalDateTime endDate) {
+        return Optional.ofNullable(nonconformityRepository.countWithAccidentRisk(companyId, startDate, endDate))
+                .orElse(0L);
+    }
+
+    public Long countOverdue(UUID companyId, LocalDateTime startDate, LocalDateTime endDate) {
+        return Optional.ofNullable(nonconformityRepository.countOverdue(companyId, LocalDateTime.now(), startDate, endDate))
+                .orElse(0L);
+    }
+
+    public Double effectivenessRate(UUID companyId, LocalDateTime startDate, LocalDateTime endDate) {
+        return Optional.ofNullable(nonconformityRepository.effectivenessRate(companyId, startDate, endDate))
+                .orElse(0.0);
+    }
+
 
 
 

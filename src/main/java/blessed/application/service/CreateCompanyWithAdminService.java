@@ -35,14 +35,9 @@ public class CreateCompanyWithAdminService {
     public void createCompanyWithAdmin(
             CompanyWithAdminRequestDTO data
     ){
-        try{
-            Company company = companyService.create(data.company());
-            Sector sector = sectorService.createForNewCompany(data.sector(), company);
-            userService.register(data.admin(), company, sector);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
+        Company company = companyService.create(data.company());
+        Sector sector = sectorService.createForNewCompany(data.sector(), company);
+        userService.register(data.admin(), company, sector);
 
     }
 }

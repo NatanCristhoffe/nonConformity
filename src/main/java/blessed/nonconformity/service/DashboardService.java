@@ -35,11 +35,10 @@ public class DashboardService {
         response.setByPriority(dashboardQuery.countByPriority(companyId, startDate, endDate));
         response.setByDepartment(dashboardQuery.countByDepartment(companyId, startDate, endDate));
         response.setTrend(dashboardQuery.trend(companyId, startDate, endDate));
-        Double avg = dashboardQuery.averageResolutionDays(companyId, startDate, endDate);
-
-        String formatted = formatAverageDays(avg);
-
-        response.setAverageResolutionDays(formatted);
+        response.setAverageResolutionDays(formatAverageDays(dashboardQuery.averageResolutionDays(companyId, startDate, endDate)));
+        response.setWithAccidentRisk(dashboardQuery.countWithAccidentRisk(companyId, startDate, endDate));
+        response.setOverdueCount(dashboardQuery.countOverdue(companyId, startDate, endDate));
+        response.setEffectivenessRate(dashboardQuery.effectivenessRate(companyId, startDate, endDate));
 
         return response;
     }

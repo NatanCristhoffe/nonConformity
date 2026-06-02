@@ -7,7 +7,7 @@ import java.time.Instant;
 public record SectorResponseDTO(
         Long id, String name,
         String description, boolean active,
-        Instant createdAr
+        Instant createdAt
         ){
     public SectorResponseDTO(Sector entity){
         this(

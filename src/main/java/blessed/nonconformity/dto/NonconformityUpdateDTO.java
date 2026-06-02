@@ -26,7 +26,6 @@ public record NonconformityUpdateDTO(
         NonConformityPriorityLevel priorityLevel,
 
         @NotNull(message = "A data de disposição é obrigatória.")
-        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
         LocalDateTime dispositionDate,
 
         @NotNull(message = "O setor onde ocorreu a não conformidade deve ser informado.")

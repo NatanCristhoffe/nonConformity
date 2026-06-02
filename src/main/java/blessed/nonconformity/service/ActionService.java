@@ -2,6 +2,7 @@ package blessed.nonconformity.service;
 
 
 import blessed.auth.utils.CurrentUser;
+import blessed.infra.email.NcEmailService;
 import blessed.infra.enums.FileType;
 import blessed.infra.storage.S3FileStorageService;
 import blessed.nonconformity.dto.*;
@@ -30,6 +31,7 @@ public class ActionService {
     private final NonConformityQuery nonConformityQuery;
     private final S3FileStorageService s3Service;
     private final NotificationService notificationService;
+    private final NcEmailService ncEmailService;
     private final CurrentUser currentUser;
 
 
@@ -39,6 +41,7 @@ public class ActionService {
             NonConformityQuery nonConformityQuery,
             S3FileStorageService s3Service,
             NotificationService notificationService,
+            NcEmailService ncEmailService,
             CurrentUser currentUser
     ) {
         this.userQuery = userQuery;
@@ -46,6 +49,7 @@ public class ActionService {
         this.nonConformityQuery = nonConformityQuery;
         this.s3Service = s3Service;
         this.notificationService = notificationService;
+        this.ncEmailService = ncEmailService;
         this.currentUser = currentUser;
     }
 
@@ -74,6 +78,7 @@ public class ActionService {
                 action.getTitle()
         );
 
+        ncEmailService.sendActionAssigned(action, responsibleUser);
 
         return action;
     }
@@ -106,6 +111,10 @@ public class ActionService {
                 NotificationType.ACTION_COMPLETED,
                 action.getNonconformity().getTitle()
         );
+
+        ncEmailService.sendActionCompleted(context.action(), context.nonConformity().getDispositionOwner());
+        ncEmailService.sendActionCompleted(context.action(), context.nonConformity().getEffectivenessAnalyst());
+
         return new ActionResponseDTO(context.action());
     }
 
@@ -132,6 +141,9 @@ public class ActionService {
                 action.getNonconformity().getTitle()
         );
 
+        ncEmailService.sendActionNotExecuted(context.action(), context.nonConformity().getDispositionOwner());
+        ncEmailService.sendActionNotExecuted(context.action(), context.nonConformity().getEffectivenessAnalyst());
+
         return new ActionResponseDTO(context.action());
     }
 
@@ -157,6 +169,8 @@ public class ActionService {
                 NotificationType.DISPOSITION_COMPLETED,
                 nc.getTitle()
         );
+
+        ncEmailService.sendActionsStageCompleted(nc, nc.getEffectivenessAnalyst());
 
         return new NonconformityResponseDTO(nc);
     }

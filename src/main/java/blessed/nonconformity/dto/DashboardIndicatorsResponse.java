@@ -16,7 +16,8 @@ import java.util.Map;
         "trend",
         "averageResolutionDays",
         "effectivenessRate",
-        "withAccidentRisk"
+        "withAccidentRisk",
+        "overdueCount"
 })
 @Getter
 @Setter
@@ -29,4 +30,5 @@ public class DashboardIndicatorsResponse {
     private String averageResolutionDays;
     private Double effectivenessRate;
     private Long withAccidentRisk;
+    private Long overdueCount;
 }

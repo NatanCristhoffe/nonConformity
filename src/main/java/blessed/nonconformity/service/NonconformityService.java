@@ -2,6 +2,7 @@ package blessed.nonconformity.service;
 
 import blessed.auth.utils.CurrentUser;
 import blessed.company.entity.Company;
+import blessed.infra.email.NcEmailService;
 import blessed.company.service.query.CompanyQuery;
 import blessed.exception.BusinessException;
 import blessed.infra.enums.FileType;
@@ -48,6 +49,7 @@ public class NonconformityService {
     private final S3FileStorageService s3Service;
     private final CompanyQuery companyQuery;
     private final NotificationService notificationService;
+    private final NcEmailService ncEmailService;
     private final CurrentUser currentUser;
 
     public NonconformityService(
@@ -58,6 +60,7 @@ public class NonconformityService {
             S3FileStorageService s3Service,
             CompanyQuery companyQuery,
             NotificationService notificationService,
+            NcEmailService ncEmailService,
             CurrentUser currentUser
     ) {
         this.qualityToolService = qualityToolService;
@@ -67,6 +70,7 @@ public class NonconformityService {
         this.s3Service = s3Service;
         this.companyQuery = companyQuery;
         this.notificationService = notificationService;
+        this.ncEmailService = ncEmailService;
         this.currentUser = currentUser;
     }
 
@@ -77,8 +81,6 @@ public class NonconformityService {
         NonConformity nonConformity = includeAll
                 ? nonConformityQuery.byIdWithAll(nonconformityId, companyId)
                 : nonConformityQuery.byId(nonconformityId, companyId);
-
-        System.out.println(nonConformity.getCreatedAt());
 
         String presignedUrl = s3Service.generatePresignedUrl(nonConformity.getUrlEvidence());
 
@@ -153,6 +155,12 @@ public class NonconformityService {
                 NotificationType.EFFECTIVENESS_ANALYST_ASSIGNED,
                 nc.getTitle()
         );
+
+        ncEmailService.sendNcCreated(nc, dispositionOwner);
+        if (!effectivenessAnalyst.getId().equals(dispositionOwner.getId())) {
+            ncEmailService.sendNcCreated(nc, effectivenessAnalyst);
+        }
+
         return new NonconformityResponseDTO(nc);
     }
 
@@ -200,6 +208,13 @@ public class NonconformityService {
                     nonConformity.getTitle()
             );
         }
+
+        for (UUID userId : usersId) {
+            if (!userId.equals(user.getId())) {
+                User recipient = userService.getById(userId);
+                ncEmailService.sendNcApproved(nonConformity, recipient);
+            }
+        }
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -222,6 +237,8 @@ public class NonconformityService {
                 NotificationType.NON_CONFORMITY_RETURNED_FOR_CORRECTION,
                 nonConformity.getTitle()
         );
+
+        ncEmailService.sendNcReturnedForCorrection(nonConformity, nonConformity.getCreatedBy());
     }
 
 
@@ -252,7 +269,7 @@ public class NonconformityService {
                 .map(NonconformityResponseDTO::new);
     }
 
-    @PreAuthorize("@ncAuth.isDispositionOwnerOrAdmin(#nonconformityId)")
+    @PreAuthorize("@ncAuth.isDispositionOwnerOrAdmin(#id)")
     @Transactional
     public void update(Long id, NonconformityUpdateDTO data, MultipartFile file){
         UUID companyId = currentUser.getCompanyId();
@@ -308,6 +325,7 @@ public class NonconformityService {
                 nonConformity.getTitle()
         );
 
+        ncEmailService.sendNcResubmitted(nonConformity, nonConformity.getEffectivenessAnalyst());
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -315,5 +333,13 @@ public class NonconformityService {
     public void cancel(Long id){
         NonConformity nc = nonConformityQuery.byId(id, currentUser.getCompanyId());
         nc.cancelNonConformity(currentUser.get());
+
+        ncEmailService.sendNcCanceled(nc, nc.getCreatedBy());
+        if (!nc.getDispositionOwner().getId().equals(nc.getCreatedBy().getId())) {
+            ncEmailService.sendNcCanceled(nc, nc.getDispositionOwner());
+        }
+        if (!nc.getEffectivenessAnalyst().getId().equals(nc.getCreatedBy().getId())) {
+            ncEmailService.sendNcCanceled(nc, nc.getEffectivenessAnalyst());
+        }
     }
 }

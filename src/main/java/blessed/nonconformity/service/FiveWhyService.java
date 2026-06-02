@@ -2,6 +2,7 @@ package blessed.nonconformity.service;
 
 import blessed.auth.utils.CurrentUser;
 import blessed.exception.BusinessException;
+import blessed.infra.email.NcEmailService;
 import blessed.exception.ResourceNotFoundException;
 import blessed.nonconformity.dto.FiveWhyAnswerRequestDTO;
 import blessed.nonconformity.dto.FiveWhyRequestDTO;
@@ -37,6 +38,7 @@ public class FiveWhyService {
     private final FiveWhyQuery fiveWhyQuery;
     private final UserQuery userQuery;
     private final NotificationService notificationService;
+    private final NcEmailService ncEmailService;
     private final CurrentUser currentUser;
 
     public FiveWhyService(
@@ -44,12 +46,14 @@ public class FiveWhyService {
             FiveWhyQuery fiveWhyQuery,
             UserQuery userQuery,
             NotificationService notificationService,
+            NcEmailService ncEmailService,
             CurrentUser currentUser
             ){
         this.fiveWhyQuery = fiveWhyQuery;
         this.ncRepository = ncRepository;
         this.userQuery = userQuery;
         this.notificationService = notificationService;
+        this.ncEmailService = ncEmailService;
         this.currentUser = currentUser;
     }
 
@@ -83,6 +87,11 @@ public class FiveWhyService {
                 NotificationType.QUALITY_TOOL_COMPLETED,
                 nc.getTitle()
             );
+
+            ncEmailService.sendFiveWhyCompleted(nc, nc.getDispositionOwner());
+            if (!nc.getEffectivenessAnalyst().getId().equals(nc.getDispositionOwner().getId())) {
+                ncEmailService.sendFiveWhyCompleted(nc, nc.getEffectivenessAnalyst());
+            }
         }
     }
 

@@ -2,7 +2,6 @@ package blessed.nonconformity.dto;
 
 import blessed.nonconformity.enums.NonConformityPriorityLevel;
 import blessed.nonconformity.enums.QualityToolType;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -26,7 +25,6 @@ public record NonconformityRequestDTO(
         NonConformityPriorityLevel priorityLevel,
 
         @NotNull(message = "A data de disposição é obrigatória.")
-        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
         LocalDateTime dispositionDate,
 
         Long linkedRncId,

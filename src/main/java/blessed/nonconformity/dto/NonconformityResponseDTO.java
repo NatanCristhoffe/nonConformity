@@ -36,7 +36,7 @@ public record NonconformityResponseDTO(
 
         Boolean requiresQualityTool,
         QualityToolType selectedTool,
-        FiveWhyToolResponseDTO fiveWhyToll,
+        FiveWhyToolResponseDTO fiveWhyTool,
         RootCauseResponseDTO rootCause,
 
         Set<ActionResponseDTO> actions,

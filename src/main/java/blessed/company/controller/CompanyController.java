@@ -3,6 +3,7 @@ package blessed.company.controller;
 
 import blessed.application.dto.CompanyWithAdminRequestDTO;
 import blessed.application.service.CreateCompanyWithAdminService;
+import blessed.company.dto.CompanyPlanDTO;
 import blessed.company.dto.CompanyRequestDTO;
 import blessed.company.dto.UpdatePlanTypeCompanyDTO;
 import blessed.company.enums.PlanType;
@@ -10,6 +11,7 @@ import blessed.company.service.CompanyService;
 
 import blessed.user.entity.User;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +36,12 @@ public class CompanyController {
         serviceAdmin.createCompanyWithAdmin(data);
 
         return ResponseEntity.ok(Map.of("success", "Empresa cadastrada com sucesso!"));
+    }
+
+    @GetMapping("/plan")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CompanyPlanDTO> getPlanInfo(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(companyService.getPlanInfo(user.getCompany().getId()));
     }
 
     @PatchMapping("/update-plan")

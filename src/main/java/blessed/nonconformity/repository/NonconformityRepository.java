@@ -189,6 +189,51 @@ public interface NonconformityRepository extends JpaRepository<NonConformity, Lo
     );
 
     @Query("""
+    SELECT COUNT(nc)
+    FROM NonConformity nc
+    WHERE nc.company.id = :companyId
+    AND nc.hasAccidentRisk = true
+    AND (:startDate IS NULL OR nc.createdAt >= :startDate)
+    AND (:endDate IS NULL OR nc.createdAt <= :endDate)
+    """)
+    Long countWithAccidentRisk(
+            @Param("companyId") UUID companyId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+
+    @Query("""
+    SELECT COUNT(nc)
+    FROM NonConformity nc
+    WHERE nc.company.id = :companyId
+    AND nc.status NOT IN ('CLOSED', 'CANCELED')
+    AND nc.dispositionDate < :now
+    AND (:startDate IS NULL OR nc.createdAt >= :startDate)
+    AND (:endDate IS NULL OR nc.createdAt <= :endDate)
+    """)
+    Long countOverdue(
+            @Param("companyId") UUID companyId,
+            @Param("now") LocalDateTime now,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+
+    @Query("""
+    SELECT
+        COUNT(CASE WHEN ea.effective = true THEN 1 END) * 1.0 / NULLIF(COUNT(ea), 0) * 100
+    FROM NonConformity nc
+    JOIN nc.effectivenessAnalysis ea
+    WHERE nc.company.id = :companyId
+    AND (:startDate IS NULL OR nc.createdAt >= :startDate)
+    AND (:endDate IS NULL OR nc.createdAt <= :endDate)
+    """)
+    Double effectivenessRate(
+            @Param("companyId") UUID companyId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+
+    @Query("""
         select
             case when count(nc) > 0 then true else false end
         from NonConformity nc

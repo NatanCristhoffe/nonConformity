@@ -35,10 +35,10 @@ public class UserQuery {
     }
 
     public void save(User newUser, Company company){
-        Long totalUser = countByCompany(company.getId());
+        Long totalUser = repository.countByCompanyId(company.getId());
 
         if (!company.getPlanType().canAddUser(totalUser)){
-            throw  new BusinessException("Limite de usuários do plano atingido.");
+            throw new BusinessException("Limite de usuários do plano atingido.");
         }
         repository.save(newUser);
     }

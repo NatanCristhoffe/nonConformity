@@ -2,6 +2,7 @@ package blessed.nonconformity.service;
 
 import blessed.auth.utils.CurrentUser;
 import blessed.exception.BusinessException;
+import blessed.infra.email.NcEmailService;
 import blessed.exception.ResourceNotFoundException;
 import blessed.nonconformity.dto.RootCauseRequestDTO;
 import blessed.nonconformity.entity.NonConformity;
@@ -30,7 +31,8 @@ public class RootCauseService {
     private final UserQuery userQuery;
     private final RootCauseQuery rootCauseQuery;
     private final NotificationService notificationService;
-    private final  CurrentUser currentUser;
+    private final NcEmailService ncEmailService;
+    private final CurrentUser currentUser;
 
 
     public RootCauseService(
@@ -38,12 +40,14 @@ public class RootCauseService {
         NonConformityQuery nonConformityQuery,
         RootCauseQuery rootCauseQuery,
         NotificationService notificationService,
+        NcEmailService ncEmailService,
         CurrentUser currentUser
     ){
         this.userQuery = userQuery;
         this.nonConformityQuery = nonConformityQuery;
         this.rootCauseQuery = rootCauseQuery;
         this.notificationService = notificationService;
+        this.ncEmailService = ncEmailService;
         this.currentUser = currentUser;
     }
 
@@ -73,6 +77,10 @@ public class RootCauseService {
                 nc.getTitle()
         );
 
+        ncEmailService.sendRootCauseDefined(nc, nc.getDispositionOwner());
+        if (!nc.getEffectivenessAnalyst().getId().equals(nc.getDispositionOwner().getId())) {
+            ncEmailService.sendRootCauseDefined(nc, nc.getEffectivenessAnalyst());
+        }
 
         return rootCause;
     }

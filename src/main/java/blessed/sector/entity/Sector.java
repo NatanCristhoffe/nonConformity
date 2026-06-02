@@ -35,7 +35,7 @@ public class Sector extends AuditableEntity {
     private Company company;
 
     public Sector(SectorRequestDTO data, Company company){
-        this.name = data.name().toLowerCase();
+        this.name = data.name().toUpperCase();
         this.description = data.description().toLowerCase();
         this.active = true;
         this.company = company;
@@ -50,7 +50,7 @@ public class Sector extends AuditableEntity {
     }
 
     public void update(SectorRequestDTO data){
-        this.name = data.name().toLowerCase();
+        this.name = data.name().toUpperCase();
         this.description = data.description().toLowerCase();
     }
 

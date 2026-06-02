@@ -2,6 +2,7 @@ package blessed.nonconformity.service;
 
 import blessed.auth.utils.CurrentUser;
 import blessed.exception.BusinessException;
+import blessed.infra.email.NcEmailService;
 import blessed.exception.ResourceNotFoundException;
 import blessed.nonconformity.dto.EffectivenessAnalysisRequestDTO;
 import blessed.nonconformity.entity.EffectivenessAnalysis;
@@ -31,6 +32,7 @@ public class EffectivenessAnalysisService {
     private final NonConformityQuery nonConformityQuery;
     private final UserQuery userQuery;
     private final NotificationService notificationService;
+    private final NcEmailService ncEmailService;
     private final CurrentUser currentUser;
 
     public EffectivenessAnalysisService(
@@ -38,12 +40,14 @@ public class EffectivenessAnalysisService {
             NonConformityQuery nonConformityQuery,
             UserQuery userQuery,
             NotificationService notificationService,
+            NcEmailService ncEmailService,
             CurrentUser currentUser
     ) {
         this.effectivenessAnalysisQuery = effectivenessAnalysisQuery;
         this.nonConformityQuery = nonConformityQuery;
         this.userQuery = userQuery;
         this.notificationService = notificationService;
+        this.ncEmailService = ncEmailService;
         this.currentUser = currentUser;
     }
 
@@ -74,6 +78,10 @@ public class EffectivenessAnalysisService {
                     NotificationType.EFFECTIVENESS_APPROVED,
                     nc.getTitle()
             );
+            ncEmailService.sendEffectivenessApproved(nc, nc.getCreatedBy());
+            if (!nc.getDispositionOwner().getId().equals(nc.getCreatedBy().getId())) {
+                ncEmailService.sendEffectivenessApproved(nc, nc.getDispositionOwner());
+            }
         } else {
             notificationService.notifyIfNotSameUser(
                     notifyUsers,
@@ -82,6 +90,10 @@ public class EffectivenessAnalysisService {
                     NotificationType.EFFECTIVENESS_REJECTED,
                     nc.getTitle()
             );
+            ncEmailService.sendEffectivenessRejected(nc, nc.getCreatedBy());
+            if (!nc.getDispositionOwner().getId().equals(nc.getCreatedBy().getId())) {
+                ncEmailService.sendEffectivenessRejected(nc, nc.getDispositionOwner());
+            }
         }
 
     }
