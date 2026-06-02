@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum PlanType {
-    BASIC(2),
-    PREMIUM(5),
-    ENTERPRISE(10);
+    ESSENTIAL(10),
+    PROFESSIONAL(20),
+    ENTERPRISE(-1);
 
     private final int maxUsers;
 
@@ -14,8 +14,12 @@ public enum PlanType {
         this.maxUsers = maxUsers;
     }
 
+    public boolean isUnlimited() {
+        return this.maxUsers == -1;
+    }
+
     public boolean canAddUser(long currentUsers) {
-        return currentUsers < this.maxUsers;
+        return isUnlimited() || currentUsers < this.maxUsers;
     }
 
 }

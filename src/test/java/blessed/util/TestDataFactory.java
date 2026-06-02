@@ -29,7 +29,7 @@ public class TestDataFactory {
         Company company = new Company();
         company.setCompanyName("teste company");
         company.setDocument("12345678000199");
-        company.setPlanType(PlanType.ENTERPRISE);
+        company.setPlanType(PlanType.ESSENTIAL);
         company.setTypeDocument(TypeDocument.CNPJ);
         company.setPhone("4100000000");
         company.setEmail("test@test.com");

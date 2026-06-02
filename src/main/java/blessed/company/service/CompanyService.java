@@ -1,6 +1,7 @@
 package blessed.company.service;
 
 
+import blessed.company.dto.CompanyPlanDTO;
 import blessed.company.dto.CompanyRequestDTO;
 import blessed.company.dto.UpdatePlanTypeCompanyDTO;
 import blessed.company.entity.Company;
@@ -47,7 +48,7 @@ public class CompanyService {
 
         Long totalUsers = userQuery.countByCompany(companyId);
 
-        if (totalUsers > newPlan.getMaxUsers()){
+        if (!newPlan.isUnlimited() && totalUsers > newPlan.getMaxUsers()){
             throw new BusinessException(
                     "Não é possível alterar para o plano " + newPlan +
                     ". Existem " + totalUsers +
@@ -59,6 +60,21 @@ public class CompanyService {
         company.setPlanType(data.planType());
     }
 
+
+    public CompanyPlanDTO getPlanInfo(UUID companyId) {
+        Company company = companyQuery.byId(companyId);
+        long activeUsers = userQuery.countByCompany(companyId);
+        PlanType plan = company.getPlanType();
+        int maxUsers = plan.getMaxUsers();
+        long availableSlots = plan.isUnlimited() ? -1 : maxUsers - activeUsers;
+
+        return new CompanyPlanDTO(
+                plan,
+                maxUsers,
+                activeUsers,
+                availableSlots
+        );
+    }
 
     private void existsByEmailOrPhone(CompanyRequestDTO data){
         if (this.companyQuery.existsByEmailOrPhoneOrDocument(data.document(), data.email(), data.phone())){

@@ -28,6 +28,9 @@ public class S3FileStorageService implements FileStorageService {
     @Value("${aws.s3.storage.max-file-size}")
     public DataSize maxFileSize;
 
+    @Value("${aws.s3.app-prefix:nonconformity}")
+    private String appPrefix;
+
     public S3FileStorageService(S3Client s3Client,S3Presigner s3Presigner)
     {
         this.s3Client = s3Client;
@@ -44,7 +47,7 @@ public class S3FileStorageService implements FileStorageService {
         if (!fileType.isAllowed(file.getContentType())) {
             throw new BusinessException("Tipo de arquivo (" + file.getContentType() + ") não permitido. Aceitos: " + fileType.getMimeTypes());        }
 
-        String fileName = folderName + "/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
+        String fileName = appPrefix + "/" + folderName + "/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
 
         try{
             PutObjectRequest putOb = PutObjectRequest.builder()
